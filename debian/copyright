@@ -1,0 +1,19 @@
+This package was debianized by Bernhard Schmidt <berni@birkenwald.de> on
+Fri, 29 May 2009 19:24:43 +0200.
+
+It was downloaded from <http://saschahlusiak.de/linux/isatap.htm>
+
+Upstream Author(s):
+
+    Sascha Hlusiak <mail (at) saschahlusiak (dot) de> 
+
+Copyright:
+
+    <Copyright (C) 2009 Sascha Hlusiak>
+
+License:
+
+    <Put the license of the package here indented by 4 spaces>
+
+The Debian packaging is copyright 2009, Bernhard Schmidt <berni@birkenwald.de> and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.

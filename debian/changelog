@@ -1,0 +1,5 @@
+isatapd (0.9.3-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Bernhard Schmidt <berni@birkenwald.de>  Fri, 29 May 2009 19:24:43 +0200
