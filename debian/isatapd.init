@@ -29,9 +29,9 @@
 # Description:       isatapd creates and maintains an ISATAP tunnel (rfc5214) in Linux.
 ### END INIT INFO
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-DAEMON=/usr/bin/isatapd
+DAEMON=/usr/sbin/isatapd
 NAME=isatapd
 DESC="ISATAP client"
 
