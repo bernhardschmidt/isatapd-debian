@@ -87,7 +87,7 @@ running() {
 
 start_server() {
         start-stop-daemon --start --quiet --pidfile $PIDFILE \
-                --exec $DAEMON -- --daemon --pid $PIDFILE --mtu $MTU $ISATAP_ROUTERS
+                --exec $DAEMON -- --daemon --pid $PIDFILE --mtu $MTU $DAEMON_OPTS $ISATAP_ROUTERS
         errcode=$?
         return $errcode
 }
