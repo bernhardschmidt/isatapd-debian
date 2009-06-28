@@ -3,17 +3,20 @@ Fri, 29 May 2009 19:24:43 +0200.
 
 It was downloaded from <http://saschahlusiak.de/linux/isatap.htm>
 
-Upstream Author(s):
+Upstream Author:
 
-    Sascha Hlusiak <mail (at) saschahlusiak (dot) de> 
+    Sascha Hlusiak <mail@saschahlusiak.de>
 
 Copyright:
 
-    <Copyright (C) 2009 Sascha Hlusiak>
+    Copyright (C) 2009 Sascha Hlusiak
 
 License:
 
-    <Put the license of the package here indented by 4 spaces>
+    isatapd is licensed under the GNU GPL version 2.
+
+    On Debian systems, the complete text of the GNU General Public License
+    can be found in /usr/share/common-licenses/GPL-2 .
 
 The Debian packaging is copyright 2009, Bernhard Schmidt <berni@birkenwald.de> and
-is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+is licensed under the GPLv2, see `/usr/share/common-licenses/GPL-2'.

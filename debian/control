@@ -2,8 +2,8 @@ Source: isatapd
 Section: net
 Priority: extra
 Maintainer: Bernhard Schmidt <berni@birkenwald.de>
-Build-Depends: cdbs (>= 0.4.23-1.1)
-Standards-Version: 3.8.0
+Build-Depends: cdbs (>= 0.4.23-1.1), debhelper (>= 7.0.1)
+Standards-Version: 3.8.1
 Homepage: http://saschahlusiak.de/linux/isatap.htm
 
 Package: isatapd
