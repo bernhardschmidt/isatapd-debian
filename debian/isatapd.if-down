@@ -8,6 +8,10 @@ if [ "$RELOAD_ON_IFUPDOWN" = "yes" ]; then
 	if [ "$RELOAD_ON_IFUPDOWN_DELAY" = "yes" ]; then
 		/bin/sleep 5
 	fi
-	/etc/init.d/isatapd reload > /dev/null 2>/dev/null
+	if which invoke-rc.d >/dev/null 2>&1; then
+		invoke-rc.d isatapd reload
+	else
+		/etc/init.d/isatapd reload > /dev/null 2>/dev/null
+	fi
 fi
 
