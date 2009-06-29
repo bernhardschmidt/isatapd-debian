@@ -16,3 +16,10 @@ MTU="1280"
 
 # Additional options, see isatapd(8) for details
 #DAEMON_OPTS=""
+
+# Send SIGHUP to running isatapd when an interface comes up
+RELOAD_ON_IFUPDOWN="yes"
+
+# Delay reload for 5 seconds to wait for routes to settle
+RELOAD_ON_IFUPDOWN_DELAY="no"
+
