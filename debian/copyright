@@ -1,4 +1,4 @@
-This package was debianized by Bernhard Schmidt <berni@birkenwald.de> on
+This package was debianized by Bernhard Schmidt <berni+deb@birkenwald.de> on
 Fri, 29 May 2009 19:24:43 +0200.
 
 It was downloaded from <http://saschahlusiak.de/linux/isatap.htm>
@@ -18,5 +18,5 @@ License:
     On Debian systems, the complete text of the GNU General Public License
     can be found in /usr/share/common-licenses/GPL-2 .
 
-The Debian packaging is copyright 2009, Bernhard Schmidt <berni@birkenwald.de> and
+The Debian packaging is copyright 2009, Bernhard Schmidt <berni+deb@birkenwald.de> and
 is licensed under the GPLv2, see `/usr/share/common-licenses/GPL-2'.
