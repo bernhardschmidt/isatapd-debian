@@ -7,36 +7,35 @@
 # Should-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: isatapd creates and maintains an ISATAP tunnel (rfc5214) in Linux
-# Description:       isatapd creates and maintains an ISATAP tunnel (rfc5214) in Linux.
+# Short-Description: isatapd creates and maintains an ISATAP client tunnel (RFC 5214) in Linux
+# Description:       isatapd creates and maintains an ISATAP client tunnel (RFC 5214) in Linux.
 ### END INIT INFO
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 DAEMON=/usr/sbin/isatapd
-NAME=isatapd
 DESC="ISATAP client"
 
-PIDFILE=/var/run/$NAME.pid
+PIDFILE=/var/run/isatapd.pid
 
 test -x $DAEMON || exit 0
 
 . /lib/lsb/init-functions
 
 # Default options, these can be overriden by the information
-# at /etc/default/$NAME
+# at /etc/default/isatapd
 MTU=1280		# IPv6 MTU
 DAEMON_OPTS=""          # Additional options given to the server
 ISATAP_ROUTERS="isatap"
 
 # Include defaults if available
-if [ -f /etc/default/$NAME ] ; then
-    . /etc/default/$NAME
+if [ -f /etc/default/isatapd ] ; then
+    . /etc/default/isatapd
 fi
 
 if [ "x$RUN" != "xyes" ] ; then
-    log_failure_msg "$NAME disabled, please adjust the configuration to your needs "
-    log_failure_msg "and then set RUN to 'yes' in /etc/default/$NAME to enable it."
+    log_failure_msg "isatapd disabled, please adjust the configuration to your needs "
+    log_failure_msg "and then set RUN to 'yes' in /etc/default/isatapd to enable it."
     exit 0
 fi
 
@@ -52,7 +51,7 @@ stop_server() {
 
 case "$1" in
   start)
-        log_daemon_msg "Starting $DESC" "$NAME"
+        log_daemon_msg "Starting $DESC" "isatapd"
         if start_server ; then
             log_end_msg 0
         else
@@ -60,7 +59,7 @@ case "$1" in
         fi
         ;;
   stop)
-        log_daemon_msg "Stopping $DESC" "$NAME"
+        log_daemon_msg "Stopping $DESC" "isatapd"
         if stop_server ; then
             log_end_msg 0
         else
@@ -68,7 +67,7 @@ case "$1" in
         fi
         ;;
   restart|force-reload)
-        log_daemon_msg "Restarting $DESC" "$NAME"
+        log_daemon_msg "Restarting $DESC" "isatapd"
         stop_server || /bin/true
         if start_server ; then
             log_end_msg 0
@@ -77,10 +76,10 @@ case "$1" in
         fi
         ;;
   status)
-        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+        status_of_proc -p $PIDFILE $DAEMON isatapd && exit 0 || exit $?
         ;;
   reload)
-        log_daemon_msg "Reloading $DESC" "$NAME"
+        log_daemon_msg "Reloading $DESC" "isatapd"
         if start-stop-daemon --stop --signal 1 --pidfile $PIDFILE > /dev/null; then
             log_end_msg 0
         else
@@ -88,7 +87,7 @@ case "$1" in
         fi
         ;;
   *)
-        N=/etc/init.d/$NAME
+        N=/etc/init.d/isatapd
         echo "Usage: $N {start|stop|restart|force-reload|reload|status}" >&2
         exit 1
         ;;
