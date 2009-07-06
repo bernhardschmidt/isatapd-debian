@@ -81,7 +81,7 @@ case "$1" in
         ;;
   reload)
         log_daemon_msg "Reloading $DESC" "$NAME"
-        if start-stop-daemon --stop --signal 1 -pidfile $PIDFILE --exec $DAEMON > /dev/null; then
+        if start-stop-daemon --stop --signal 1 --pidfile $PIDFILE > /dev/null; then
             log_end_msg 0
         else
             log_end_msg 1
