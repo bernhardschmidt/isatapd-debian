@@ -42,34 +42,39 @@ fi
 
 start_server() {
         start-stop-daemon --start --quiet --pidfile $PIDFILE \
-                --exec $DAEMON -- --daemon --pid $PIDFILE --mtu $MTU $DAEMON_OPTS $ISATAP_ROUTERS
-        errcode=$?
-        return $errcode
+                --exec $DAEMON -- --daemon --pid $PIDFILE \
+                --mtu $MTU $DAEMON_OPTS $ISATAP_ROUTERS || return $?
 }
 
 stop_server() {
-        start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 2 \
-                   --oknodo --exec $DAEMON
-        errcode=$?
-        return $errcode
+        start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 2 --oknodo || return $?
 }
 
 case "$1" in
   start)
         log_daemon_msg "Starting $DESC" "$NAME"
-        start_server
-        log_end_msg $?
+        if start_server ; then
+            log_end_msg 0
+        else
+            log_end_msg $?
+        fi
         ;;
   stop)
         log_daemon_msg "Stopping $DESC" "$NAME"
-        stop_server
-        log_end_msg $?
+        if stop_server ; then
+            log_end_msg 0
+        else
+            log_end_msg $?
+        fi
         ;;
   restart|force-reload)
         log_daemon_msg "Restarting $DESC" "$NAME"
-        stop_server
-        start_server
-        log_end_msg $?
+        stop_server || /bin/true
+        if start_server ; then
+            log_end_msg 0
+        else
+            log_end_msg $?
+        fi
         ;;
   status)
         status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
