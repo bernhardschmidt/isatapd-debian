@@ -54,10 +54,6 @@ stop_server() {
         return $errcode
 }
 
-status_server() {
-        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
-}
-
 reload_server() {
         [ -f "$PIDFILE" ] || return 1
         pid=`cat $PIDFILE`
@@ -84,11 +80,11 @@ case "$1" in
         log_end_msg $?
         ;;
   status)
-        status_server
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
         ;;
   reload)
         log_daemon_msg "Reloading $DESC" "$NAME"
-        if status_server ; then
+        if running ; then
 	    reload_server
         else
             log_progress_msg "$NAME is not running"
