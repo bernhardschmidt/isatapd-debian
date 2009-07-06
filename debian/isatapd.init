@@ -29,8 +29,6 @@ MTU=1280		# IPv6 MTU
 DAEMON_OPTS=""          # Additional options given to the server
 ISATAP_ROUTERS="isatap"
 
-STARTTIME=1
-
 # Include defaults if available
 if [ -f /etc/default/$NAME ] ; then
     . /etc/default/$NAME
@@ -41,31 +39,6 @@ if [ "x$RUN" != "xyes" ] ; then
     log_failure_msg "and then set RUN to 'yes' in /etc/default/$NAME to enable it."
     exit 0
 fi
-
-set -e
-
-running_pid() {
-# Check if a given process pid's cmdline matches a given name
-    pid=$1
-    name=$2
-    [ -z "$pid" ] && return 1
-    [ ! -d /proc/$pid ] &&  return 1
-    cmd=`cat /proc/$pid/cmdline | tr "\000" "\n"|head -n 1 |cut -d : -f 1`
-    # Is this the expected server
-    [ "$cmd" != "$name" ] &&  return 1
-    return 0
-}
-
-running() {
-# Check if the process is running looking at /proc
-# (works for all users)
-
-    # No pidfile, probably no daemon present
-    [ ! -f "$PIDFILE" ] && return 1
-    pid=`cat $PIDFILE`
-    running_pid $pid $DAEMON || return 1
-    return 0
-}
 
 start_server() {
         start-stop-daemon --start --quiet --pidfile $PIDFILE \
