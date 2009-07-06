@@ -110,16 +110,7 @@ case "$1" in
         log_end_msg $errcode
         ;;
   status)
-
-        log_daemon_msg "Checking status of $DESC" "$NAME"
-        if running ;  then
-            log_progress_msg "running"
-            log_end_msg 0
-        else
-            log_progress_msg "apparently not running"
-            log_end_msg 1
-            exit 1
-        fi
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
         ;;
   reload)
         log_daemon_msg "Reloading $DESC" "$NAME"
