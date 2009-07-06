@@ -94,7 +94,7 @@ start_server() {
 
 stop_server() {
         start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 2 \
-                   --exec $DAEMON
+                   --oknodo --exec $DAEMON
         errcode=$?
         return $errcode
 }
@@ -135,17 +135,8 @@ case "$1" in
         ;;
   stop)
         log_daemon_msg "Stopping $DESC" "$NAME"
-        if running ; then
-            # Only stop the server if we see it running
-            errcode=0
-            stop_server || errcode=$?
-            log_end_msg $errcode
-        else
-            # If it's not running don't do anything
-            log_progress_msg "apparently not running"
-            log_end_msg 0
-            exit 0
-        fi
+        stop_server
+        log_end_msg $?
         ;;
   restart|force-reload)
         log_daemon_msg "Restarting $DESC" "$NAME"
