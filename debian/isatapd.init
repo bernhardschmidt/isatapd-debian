@@ -54,14 +54,6 @@ stop_server() {
         return $errcode
 }
 
-reload_server() {
-        [ -f "$PIDFILE" ] || return 1
-        pid=`cat $PIDFILE`
-        kill -1 $pid
-        errcode=$?
-        return $errcode
-}
-
 case "$1" in
   start)
         log_daemon_msg "Starting $DESC" "$NAME"
@@ -84,12 +76,10 @@ case "$1" in
         ;;
   reload)
         log_daemon_msg "Reloading $DESC" "$NAME"
-        if running ; then
-	    reload_server
+        if start-stop-daemon --stop --signal 1 -pidfile $PIDFILE --exec $DAEMON > /dev/null; then
+            log_end_msg 0
         else
-            log_progress_msg "$NAME is not running"
             log_end_msg 1
-            exit 1
         fi
         ;;
   *)
