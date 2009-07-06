@@ -68,7 +68,7 @@ case "$1" in
         ;;
   restart|force-reload)
         log_daemon_msg "Restarting $DESC" "isatapd"
-        stop_server || /bin/true
+        stop_server
         if start_server ; then
             log_end_msg 0
         else
