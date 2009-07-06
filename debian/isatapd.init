@@ -92,28 +92,8 @@ reload_server() {
 case "$1" in
   start)
         log_daemon_msg "Starting $DESC" "$NAME"
-        # Check if it's running first
-        if running ;  then
-            log_progress_msg "apparently already running"
-            log_end_msg 0
-            exit 0
-        fi
-        if start_server ; then
-            # NOTE: Some servers might die some time after they start,
-            # this code will detect this issue if STARTTIME is set
-            # to a reasonable value
-            [ -n "$STARTTIME" ] && sleep $STARTTIME # Wait some time 
-            if  running ;  then
-                # It's ok, the server started and is running
-                log_end_msg 0
-            else
-                # It is not running after we did start
-                log_end_msg 1
-            fi
-        else
-            # Either we could not start it
-            log_end_msg 1
-        fi
+        start_server
+        log_end_msg $?
         ;;
   stop)
         log_daemon_msg "Stopping $DESC" "$NAME"
