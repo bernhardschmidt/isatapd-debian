@@ -59,7 +59,7 @@ status_server() {
 }
 
 reload_server() {
-        [ ! -f "$PIDFILE" ] && return 1
+        [ -f "$PIDFILE" ] || return 1
         pid=`cat $PIDFILE`
         kill -1 $pid
         errcode=$?
