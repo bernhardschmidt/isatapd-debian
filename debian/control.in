@@ -3,7 +3,7 @@ Section: net
 Priority: extra
 Maintainer: Bernhard Schmidt <berni+deb@birkenwald.de>
 Build-Depends: @cdbs@
-Standards-Version: 3.8.1
+Standards-Version: 3.8.2
 Homepage: http://saschahlusiak.de/linux/isatap.htm
 
 Package: isatapd
