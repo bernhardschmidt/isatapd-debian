@@ -1,3 +1,13 @@
+isatapd (0.9.4-4) unstable; urgency=low
+
+  * cleanup packaging and scripts, massive thanks to Marco d'Itri
+    - simplify init script
+    - use sh -e everywhere
+    - make RELOAD_ON_IFUPDOWN_DELAY a number (seconds to sleep)
+    - make package description more clear
+
+ -- Bernhard Schmidt <berni+deb@birkenwald.de>  Tue, 07 Jul 2009 02:06:26 +0200
+
 isatapd (0.9.4-3) unstable; urgency=low
 
   * reload scripts for ifupdown and ppp
