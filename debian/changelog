@@ -1,3 +1,9 @@
+isatapd (0.9.5~rc1-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Bernhard Schmidt <berni+deb@birkenwald.de>  Fri, 10 Jul 2009 15:14:36 +0200
+
 isatapd (0.9.4-1) unstable; urgency=low
 
   * Initial release (Closes: #535020)
