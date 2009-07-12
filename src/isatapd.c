@@ -59,6 +59,21 @@ static int   syslog_facility = LOG_DAEMON;
 
 
 
+static void sigint_handler(int sig)
+{
+	signal(sig, SIG_DFL);
+	if (verbose >= 0)
+		syslog(LOG_NOTICE, "signal %d received, going down.\n", sig);
+	go_down = 1;
+}
+
+static void sighup_handler(int sig)
+{
+	if (verbose >= 0)
+		syslog(LOG_NOTICE, "SIGHUP received.\n");
+}
+
+
 static void show_help()
 {
 	fprintf(stderr, "Usage: isatapd [OPTIONS] [ROUTER]...\n");
@@ -95,7 +110,7 @@ static void show_help()
 	fprintf(stderr, "       -h --help       display this message\n");
 	fprintf(stderr, "          --version    display version\n");
 
-	exit(0);
+	exit(1);
 }
 
 static void show_version()
@@ -162,7 +177,7 @@ static void parse_options(int argc, char** argv)
 		case 'i': if (optarg) {
 				probe_interval = atoi(optarg);
 				if (probe_interval <= 0) {
-					fprintf(stderr, PACKAGE ": invalid cardinal -- %s\n", optarg);
+					syslog(LOG_ERR, "invalid cardinal -- %s\n", optarg);
 					show_help();
 				}
 			}
@@ -179,13 +194,13 @@ static void parse_options(int argc, char** argv)
 			break;
 		case 'm': mtu = atoi(optarg);
 			if (mtu <= 0) {
-				fprintf(stderr, PACKAGE ": invalid mtu -- %s\n", optarg);
+				syslog(LOG_ERR, "invalid mtu -- %s\n", optarg);
 				show_help();
 			}
 			break;
 		case 't': ttl = atoi(optarg);
 			if (ttl <= 0 || ttl > 255) {
-				fprintf(stderr, PACKAGE ": invalid ttl -- %s\n", optarg);
+				syslog(LOG_ERR, "invalid ttl -- %s\n", optarg);
 				show_help();
 			}
 			break;
@@ -198,7 +213,7 @@ static void parse_options(int argc, char** argv)
 			break;
 
 		default:
-			fprintf(stderr, PACKAGE ": not implemented option -- %s\n", argv[optind-1]);
+			syslog(LOG_ERR, "not implemented option -- %s\n", argv[optind-1]);
 		case 'h':
 		case '?':
 			show_help();
@@ -285,7 +300,7 @@ static int add_prl_entry(const char* host)
 		}
 
 		p=p->ai_next;
-	}	
+	}
 	freeaddrinfo(addr_info);
 
 	return 0;
@@ -333,11 +348,10 @@ static uint32_t get_tunnel_saddr(const char* iface)
 		struct sockaddr_in addr;
 		socklen_t addrlen;
 		int fd = socket (AF_INET, SOCK_DGRAM, 0);
-		
+
 		if (fd < 0)
 			break;
 
-		
 		if (connect (fd, p->ai_addr, p->ai_addrlen) == 0) {
 			addrlen = sizeof(addr);
 			getsockname(fd, (struct sockaddr *)&addr, &addrlen);
@@ -407,65 +421,113 @@ static void stop_isatap()
 		syslog(LOG_INFO, "%s deleted\n", tunnel_name);
 }
 
-
-void sigint_handler(int sig)
+static void detect_send_rs()
 {
-	signal(sig, SIG_DFL);
-	if (verbose >= 0)
-		syslog(LOG_NOTICE, "signal %d received, going down.\n", sig);
-	go_down = 1;
+	struct utsname uts;
+	int x,y,z;
+
+	/* Default in case of error: */
+#ifdef HAVE_IP_TUNNEL_PRL_RS_DELAY
+	send_rs = 0;
+#else
+	send_rs = 1;
+#endif
+
+	if (uname(&uts) < 0)
+		perror("uname");
+	else if (sscanf(uts.release, "%d.%d.%d", &x, &y, &z) < 3) {
+		syslog(LOG_WARNING, "WARNING, unable to get running kernel. got: %s\n", uts.release);
+	} else {
+		/* Disable send_rs, if kernel >= 2.6.31 */
+		if ((x << 16) + (y << 8) + z >= 0x020600 + 31)
+			send_rs = 0;
+		else send_rs = 1;
+	}
 }
 
-void sighup_handler(int sig)
+static void write_pid_file()
 {
-	if (verbose >= 0)
-		syslog(LOG_NOTICE, "SIGHUP received.\n");
+	struct flock fl;
+	char s[32];
+	int pf;
+
+	pf = open(pid_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (pf < 0) {
+		syslog(LOG_ERR, "Cannot create pid file, terminating: %s\n", strerror(errno));
+		exit(1);
+	}
+	snprintf(s, sizeof(s), "%d\n", (int)getpid());
+	if (write(pf, s, strlen(s)) < strlen(s))
+		syslog(LOG_ERR, "write: %s\n", strerror(errno));
+	if (fsync(pf) < 0)
+		syslog(LOG_ERR, "fsync: %s\n", strerror(errno));
+
+	fl.l_type = F_WRLCK;
+	fl.l_whence = SEEK_SET;
+	fl.l_start = 0;
+	fl.l_len = 0;
+
+	if (fcntl(pf, F_SETLK, &fl) < 0) {
+		syslog(LOG_ERR, "Cannot lock pid file, terminating: %s\n", strerror(errno));
+		exit(1);
+	}
 }
 
 
+static uint32_t wait_for_link()
+{
+	uint32_t saddr;
+	if ((saddr = get_tunnel_saddr(interface_name)) == 0) {
+		if (verbose >= 0) {
+			if (interface_name)
+				syslog(LOG_INFO, "waiting for link %s to become ready...\n", interface_name);
+			else
+				syslog(LOG_INFO, "waiting for router %s to become reachable...\n", router_name[0]);
+		}
+
+		do {
+			if (verbose >= 2) {
+				syslog(LOG_DEBUG, "still waiting for link...\n");
+			}
+			sleep(WAIT_FOR_LINK);
+			saddr = get_tunnel_saddr(interface_name);
+		} while ((go_down == 0) && (saddr == 0));
+
+		if (verbose >= 0) {
+			if (saddr) {
+				if (interface_name)
+					syslog(LOG_INFO, "link %s became ready...\n", interface_name);
+				else
+					syslog(LOG_INFO, "router %s became reachable...\n", router_name[0]);
+			}
+		}
+	}
+	return saddr;
+}
 
 int main(int argc, char **argv)
 {
 	uint32_t saddr;
 
-	parse_options(argc, argv);
 	openlog(NULL, LOG_PID | LOG_PERROR, syslog_facility);
+	parse_options(argc, argv);
 
-	if (interface_name) {
-		if (tunnel_name == NULL) {
+	if (tunnel_name == NULL) {
+		if (interface_name) {
 			tunnel_name = (char *)malloc(strlen(interface_name)+3+1);
 			strcpy(tunnel_name, "is_");
 			strcat(tunnel_name, interface_name);
-		}
-	} else tunnel_name = strdup("is0");
+		} else tunnel_name = strdup("is0");
+	}
 
 	if (strchr(tunnel_name, ':')) {
-		fprintf(stderr, PACKAGE ": no ':' in tunnel name: %s\n", tunnel_name);
+		syslog(LOG_ERR, "no ':' in tunnel name: %s!\n", tunnel_name);
 		exit(1);
 	}
 
-	if (send_rs == -1) {
-		struct utsname uts;
-		int x,y,z;
-	
-		/* Default in case of error: */
-#ifdef HAVE_IP_TUNNEL_PRL_RS_DELAY
-		send_rs = 0;
-#else
-		send_rs = 1;
-#endif
+	if (send_rs == -1)
+		detect_send_rs();
 
-		if (uname(&uts) < 0)
-			perror("uname");
-		else if (sscanf(uts.release, "%d.%d.%d", &x, &y, &z) < 3) {
-			fprintf(stderr, PACKAGE ": WARNING, unable to get running kernel. got: %s\n", uts.release);
-		} else {
-			/* Disable send_rs, if kernel >= 2.6.31 */
-			if ((x << 16) + (y << 8) + z >= 0x020600 + 31)
-				send_rs = 0;
-			else send_rs = 1;
-		}
-	}
 	if (verbose >= 1)
 		syslog(LOG_INFO, "userspace sending RS: %s\n", send_rs ? "on" : "off");
 
@@ -493,7 +555,7 @@ int main(int argc, char **argv)
 			else
 				perror("get_tunnel_saddr");
 			exit(1);
-		}	
+		}
 		saddr = start_isatap(saddr);
 		if (saddr == 0)
 			perror("start_isatap");
@@ -502,32 +564,8 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 	
-	if (pid_file != NULL) {
-		struct flock fl;
-		char s[32];
-		int pf;
-
-		pf = open(pid_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (pf < 0) {
-			syslog(LOG_ERR, "Cannot create pid file, terminating: %s\n", strerror(errno));
-			exit(1);
-		}
-		snprintf(s, sizeof(s), "%d\n", (int)getpid());
-		if (write(pf, s, strlen(s)) < strlen(s))
-			syslog(LOG_ERR, "write: %s\n", strerror(errno));
-		if (fsync(pf) < 0)
-			syslog(LOG_ERR, "fsync: %s\n", strerror(errno));
-
-		fl.l_type = F_WRLCK;
-		fl.l_whence = SEEK_SET;
-		fl.l_start = 0;
-		fl.l_len = 0;
-
-		if (fcntl(pf, F_SETLK, &fl) < 0) {
-			syslog(LOG_ERR, "Cannot lock pid file, terminating: %s\n", strerror(errno));
-			exit(1);
-		}
-	}
+	if (pid_file != NULL)
+		write_pid_file();
 
 	if (daemonize == 1) {
 		setsid();
@@ -536,7 +574,6 @@ int main(int argc, char **argv)
 		close(STDERR_FILENO);
 	}
 
-
 	signal(SIGINT, sigint_handler);
 	signal(SIGTERM, sigint_handler);
 	signal(SIGHUP, sighup_handler);
@@ -544,31 +581,7 @@ int main(int argc, char **argv)
 	saddr = 0;
 	while (!go_down)
 	{
-		if ((saddr = get_tunnel_saddr(interface_name)) == 0) {
-			if (verbose >= 0) {
-				if (interface_name)
-					syslog(LOG_INFO, "waiting for link %s to become ready...\n", interface_name);
-				else
-					syslog(LOG_INFO, "waiting for router %s to become reachable...\n", router_name[0]);
-			}
-
-			do {
-				if (verbose >= 2) {
-					syslog(LOG_DEBUG, "still waiting for link...\n");
-				}
-				sleep(WAIT_FOR_LINK);
-				saddr = get_tunnel_saddr(interface_name);
-			} while ((go_down == 0) && (saddr == 0));
-
-			if (verbose >= 0) {
-				if (saddr) {
-					if (interface_name)
-						syslog(LOG_INFO, "link %s became ready...\n", interface_name);
-					else
-						syslog(LOG_INFO, "router %s became reachable...\n", router_name[0]);
-				}
-			}
-		}
+		saddr = wait_for_link();
 		if (go_down)
 			break;
 
