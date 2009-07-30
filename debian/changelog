@@ -1,8 +1,10 @@
-isatapd (0.9.5~rc1-1) unstable; urgency=low
+isatapd (0.9.5-1) unstable; urgency=low
 
-  * New Upstream Version
+  * new upstream version
+    - new option --user-rs, rename --no-rs to --no-user-rs
+    - support for kernel-space router solicitation in kernel >= 2.6.31
 
- -- Bernhard Schmidt <berni+deb@birkenwald.de>  Fri, 10 Jul 2009 15:14:36 +0200
+ -- Bernhard Schmidt <berni+deb@birkenwald.de>  Fri, 31 Jul 2009 01:10:01 +0200
 
 isatapd (0.9.4-1) unstable; urgency=low
 
