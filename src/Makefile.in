@@ -43,7 +43,7 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(sbindir)"
 sbinPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(sbin_PROGRAMS)
-am_isatapd_OBJECTS = isatapd.$(OBJEXT) tunnel.$(OBJEXT) \
+am_isatapd_OBJECTS = main.$(OBJEXT) isatap.$(OBJEXT) tunnel.$(OBJEXT) \
 	rdisc.$(OBJEXT)
 isatapd_OBJECTS = $(am_isatapd_OBJECTS)
 isatapd_LDADD = $(LDADD)
@@ -146,7 +146,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CFLAGS = -Wall
 isatapd_SOURCES = \
-	isatapd.c \
+	main.c main.h \
+	isatap.c isatap.h \
 	tunnel.c tunnel.h \
 	rdisc.c rdisc.h
 
@@ -216,7 +217,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/isatapd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/isatap.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rdisc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tunnel.Po@am__quote@
 

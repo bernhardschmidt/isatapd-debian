@@ -18,9 +18,6 @@
 /* Define to 1 if you have the `ioctl' function. */
 #undef HAVE_IOCTL
 
-/* define if you have rs_delay in struct ip_tunnel_prl */
-#undef HAVE_IP_TUNNEL_PRL_RS_DELAY
-
 /* Define to 1 if you have the <linux/socket.h> header file. */
 #undef HAVE_LINUX_SOCKET_H
 

@@ -1,3 +1,10 @@
+2009-10-04  Sascha Hlusiak  <mail@saschahlusiak.de>
+	* src/*: Rewrite
+
+2009-07-12  Sascha Hlusiak  <mail@saschahlusiak.de>
+	* src/isatapd.c: fix warning about breaking strict-aliasing
+
+
 2009-07-12  Sascha Hlusiak  <mail@saschahlusiak.de>
         * isatapd-0.9.5 released
 
