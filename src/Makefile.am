@@ -5,7 +5,8 @@ sbin_PROGRAMS = isatapd
 
 
 isatapd_SOURCES = \
-	isatapd.c \
+	main.c main.h \
+	isatap.c isatap.h \
 	tunnel.c tunnel.h \
 	rdisc.c rdisc.h
 
