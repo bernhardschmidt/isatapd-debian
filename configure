@@ -2154,7 +2154,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=isatapd
- VERSION=0.9.6_rc2
+ VERSION=0.9.6
 
 
 cat >>confdefs.h <<_ACEOF
