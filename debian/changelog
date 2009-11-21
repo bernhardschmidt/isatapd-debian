@@ -1,7 +1,6 @@
-isatapd (0.9.6-0~ppa1) karmic; urgency=low
+isatapd (0.9.6-0~ppa2) karmic; urgency=low
 
   * rebuild for Ubuntu PPA
-  * change to source format "3.0 (quilt)"
 
  -- Bernhard Schmidt <berni+deb@birkenwald.de>  Sat, 21 Nov 2009 20:56:56 +0100
 
