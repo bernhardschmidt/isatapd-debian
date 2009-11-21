@@ -54,6 +54,10 @@ uint32_t get_if_addr(const char *dev)
 	return ((struct sockaddr_in *)(&ifr.ifr_addr))->sin_addr.s_addr;
 }
 
+/**
+ * Creates tunnel interface
+ * Return -1 in case of error, otherwise 0
+ **/
 int tunnel_add(const char *dev,
 		const char *link,
 		uint32_t saddr,
@@ -96,6 +100,9 @@ int tunnel_add(const char *dev,
 	return 0;
 }
 
+/**
+ * Sets tunnel interface to UP
+ */
 int tunnel_up(const char *dev)
 {
 	struct ifreq ifr;
@@ -120,6 +127,9 @@ int tunnel_up(const char *dev)
 	return 0;
 }
 
+/**
+ * Sets tunnel interface to DOWN
+ **/
 int tunnel_down(const char *dev)
 {
 	struct ifreq ifr;
@@ -144,6 +154,9 @@ int tunnel_down(const char *dev)
 	return 0;
 }
 
+/**
+ * Delete tunnel interface
+ **/
 int tunnel_del(const char *dev)
 {
 	struct ip_tunnel_parm p;
@@ -174,7 +187,35 @@ int tunnel_del(const char *dev)
 	return 0;
 }
 
+/**
+ * Sets interface MTU
+ **/
+int tunnel_set_mtu(const char *dev, int mtu)
+{
+	struct ifreq ifr;
+	int fd;
 
+	fd = socket(AF_INET, SOCK_DGRAM, 0);
+	if (fd < 0)
+		return -1;
+
+	memset(&ifr, 0, sizeof(ifr));
+	strncpy(ifr.ifr_name, dev, IFNAMSIZ);
+	ifr.ifr_mtu = mtu;
+	if (ioctl(fd, SIOCSIFMTU, &ifr) < 0) {
+		close(fd);
+		return -1;
+	}
+	close(fd);
+
+	return 0;
+}
+
+
+
+/**
+ * Adds IPv4 address to tunnel PRL
+ **/
 int tunnel_add_prl(const char *dev, uint32_t addr, int default_rtr)
 {
 	struct ip_tunnel_prl p;
@@ -200,6 +241,9 @@ int tunnel_add_prl(const char *dev, uint32_t addr, int default_rtr)
 	return 0;
 }
 
+/**
+ * Removes IPv4 address from tunnel PRL
+ **/
 int tunnel_del_prl(const char *dev, uint32_t addr)
 {
 	struct ip_tunnel_prl p;
@@ -220,61 +264,6 @@ int tunnel_del_prl(const char *dev, uint32_t addr)
 		return -1;
 	}
 	close(fd);
-	return 0;
-}
-
-int tunnel_get_prl(const char *dev, uint32_t *addr, int num)
-{
-	struct ifreq ifr;
-	struct ip_tunnel_prl *p;
-	int i;
-	int fd;
-	
-	p = (struct ip_tunnel_prl*)
-		malloc(sizeof(struct ip_tunnel_prl) * ( num + 2 ));
-	if (p == 0)
-		return -1;
-
-	p->addr = htonl(INADDR_ANY);
-	p->datalen = (num) * sizeof(struct ip_tunnel_prl);
-
-	strncpy(ifr.ifr_name, dev, IFNAMSIZ);
-	ifr.ifr_ifru.ifru_data = (void*)p;
-	fd = socket(AF_INET, SOCK_DGRAM, 0);
-	if (fd < 0)
-		return -1;
-	
-	if (ioctl(fd, SIOCGETPRL, &ifr)) {
-		close(fd);
-		return -1;
-	}
-	close(fd);
-	
-	for (i=0; i < p->datalen/sizeof(struct ip_tunnel_prl) && i < num; i++) {
-		addr[i] = p[i+1].addr;
-	}
-	
-	return i;
-}
-
-int tunnel_set_mtu(const char *dev, int mtu)
-{
-	struct ifreq ifr;
-	int fd;
-
-	fd = socket(AF_INET, SOCK_DGRAM, 0);
-	if (fd < 0)
-		return -1;
-
-	memset(&ifr, 0, sizeof(ifr));
-	strncpy(ifr.ifr_name, dev, IFNAMSIZ);
-	ifr.ifr_mtu = mtu;
-	if (ioctl(fd, SIOCSIFMTU, &ifr) < 0) {
-		close(fd);
-		return -1;
-	}
-	close(fd);
-
 	return 0;
 }
 
