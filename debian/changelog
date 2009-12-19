@@ -1,6 +1,6 @@
-isatapd (0.9.6-0) unstable; urgency=low
+isatapd (0.9.6-1) unstable; urgency=low
 
-  * Imported Upstream version 0.9.6
+  * Imported Upstream version 0.9.6 (Closes: #561637)
     - mostly rewritten
     - new options --nopmtudisc, --ttl auto, --ttl inherit, --check-dns
     - removed options --user-rs, --no-user-rs
@@ -12,7 +12,7 @@ isatapd (0.9.6-0) unstable; urgency=low
     - remove stale PRL entries from kernel
   * bump Standards-Version to 3.8.3 (no changes needed)
 
- -- Bernhard Schmidt <berni+deb@birkenwald.de>  Sat, 21 Nov 2009 20:41:28 +0100
+ -- Bernhard Schmidt <berni+deb@birkenwald.de>  Sat, 19 Dec 2009 02:25:43 +0100
 
 isatapd (0.9.5-1) unstable; urgency=low
 
