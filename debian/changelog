@@ -1,3 +1,12 @@
+isatapd (0.9.6-2) unstable; urgency=low
+
+  * switch from cdbs to debhelper9 for hardening
+  * depend on $remote_fs in initscript
+  * if-up/if-down/ppp-up/ppp-down: Only reload isatapd if running 
+    (Closes: #647175)
+
+ -- Bernhard Schmidt <berni+deb@birkenwald.de>  Fri, 02 Dec 2011 17:57:47 +0100
+
 isatapd (0.9.6-1) unstable; urgency=low
 
   * Imported Upstream version 0.9.6 (Closes: #561637)
