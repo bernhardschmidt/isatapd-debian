@@ -1,8 +1,8 @@
 #!/bin/sh -e
 ### BEGIN INIT INFO
 # Provides:          isatapd
-# Required-Start:    $network $local_fs
-# Required-Stop:
+# Required-Start:    $network $remote_fs
+# Required-Stop:     $remote_fs
 # Should-Start:      $named
 # Should-Stop:
 # Default-Start:     2 3 4 5
