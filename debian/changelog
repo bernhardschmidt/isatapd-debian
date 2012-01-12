@@ -4,6 +4,7 @@ isatapd (0.9.6-2) unstable; urgency=low
   * depend on $remote_fs in initscript
   * if-up/if-down/ppp-up/ppp-down: Only reload isatapd if running 
     (Closes: #647175)
+  * add Vcs-* control fields
 
  -- Bernhard Schmidt <berni+deb@birkenwald.de>  Fri, 02 Dec 2011 17:57:47 +0100
 
