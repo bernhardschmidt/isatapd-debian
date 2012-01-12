@@ -9,7 +9,7 @@ Vcs-Git: git://github.com/bernhardschmidt/isatapd-debian.git
 Vcs-Browser: https://github.com/bernhardschmidt/isatapd-debian
 
 Package: isatapd
-Architecture: any
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: creates and maintains an ISATAP client tunnel (RFC 5214)
  isatapd creates and maintains an ISATAP client tunnel (RFC 5214) in Linux.
