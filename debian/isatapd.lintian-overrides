@@ -1,0 +1,4 @@
+# Lintian incorrectly thinks that update-rc.d <service> disable calls
+# duplicate the calls added to set up the init script.  These calls port
+# the old RUN configuration to a properly disabled/enabled daemon.
+isatapd: duplicate-updaterc.d-calls-in-postinst isatapd

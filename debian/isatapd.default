@@ -1,6 +1,8 @@
-# Set RUN=yes to start isatapd at boot time. You may need to set the
-# ISATAP_ROUTER parameter below
-RUN="yes" 
+# The RUN variable is obsole and is not evaluated anymore. If it is set
+# to anything but "yes" during the upgrade to 0.9.7-1 the service will
+# be disabled using update-rc.d.
+# Do not overwrite this file with the package maintainer defaults if you want
+# this to happen.
 
 # A space seperated list of one or more hostnames/IPv4 addresses to use as
 # potential routers.

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+# Handle upgrades from versions supporting RUN in /etc/default/isatapd.
+# Disable the service properly if RUN is not set to "yes"
+if [ "$1" = 'configure' ] && [ -f /etc/default/isatapd ] ; then
+	if [ -n "$2" ] && dpkg --compare-versions "$2" lt 0.9.7 ; then
+		. /etc/default/isatapd
+		if [ -n "$RUN" ] && [ "$RUN" != "yes" ]; then
+			update-rc.d isatapd disable > /dev/null
+			deb-systemd-helper disable isatapd.service
+		fi
+	fi
+fi
+
+#DEBHELPER#
+
