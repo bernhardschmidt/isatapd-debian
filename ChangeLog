@@ -1,3 +1,14 @@
+2013-09-22  Sascha Hlusiak  <mail@saschahlusiak.de>
+	* isatapd-0.9.7 released
+	* src/*: fix missing includes to build on various platforms
+		 resolve PRL entries for UDP instead of PROTO 41
+		 accept parameter value 'auto' for --name, --link, --interval and --mtu
+
+
+2010-02-20  Sascha Hlusiak  <mail@saschahlusiak.de>
+	* src/main.c: don't corrupt pid file on conflict
+
+
 2009-11-15  Sascha Hlusiak  <mail@saschahlusiak.de>
 	* isatapd-0.9.6 released
 	* src/*: Complete Rewrite
@@ -10,16 +21,16 @@
 
 
 2009-07-12  Sascha Hlusiak  <mail@saschahlusiak.de>
-        * isatapd-0.9.5 released
+	* isatapd-0.9.5 released
 
 	* src/isatapd.c: Fix setting tunnel name with --name
 			 exit(1) in case of parameter error and write to syslog
 
 	* openrc/: openrc compatible init scripts
 
-2009-07-10  Sascha Hlusiak  <mail@saschahlusiak.de>
+	* isatapd-0.9.5 released
 
-        * configure.in, src/tunnel.c: check for ip_tunnel_prl.rs_delay and pass to kernel
+	* configure.in, src/tunnel.c: check for ip_tunnel_prl.rs_delay and pass to kernel
 
 	* src/isatapd.c: detect running kernel to set send_rs
 			 new option --user-rs, rename --no-rs to --no-user-rs
@@ -29,5 +40,5 @@
 	* man/isatapd.man: reflect changes, minor fixes
 
 2009-06-07  Sascha Hlusiak  <mail@saschahlusiak.de>
+	* initial releases 0.9.0 to 0.9.4
 
-        * initial releases 0.9.0..0.9.4

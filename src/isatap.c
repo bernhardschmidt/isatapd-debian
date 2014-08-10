@@ -119,13 +119,20 @@ struct PRLENTRY* find_internal_pdr_by_addr(uint32_t ip) {
 	return NULL;
 }
 
+static int mycmp(void* a, void* b, int size) {
+	while (size--)
+		if (*((char*)a + size) != *((char*)b + size))
+			return -1;
+	return 0;
+}
+
 /**
  * Returns first PRL entry for given IPv6 address
  **/
 struct PRLENTRY* find_internal_pdr_by_addr6(struct in6_addr *addr) {
 	struct PRLENTRY* cur = prl_head;
 	while (cur) {
-		if (bcmp(&cur->addr6.sin6_addr, addr, sizeof(struct in6_addr)) == 0) 
+		if (mycmp(&cur->addr6.sin6_addr, addr, sizeof(struct in6_addr)) == 0) 
 			return cur;
 		cur = cur->next;
 	}
@@ -213,7 +220,12 @@ int add_router_name_to_internal_prl(const char* host, int default_timeout)
 	/* Get addresses for host */
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
-	hints.ai_protocol=IPPROTO_IPV6;
+	/* strictly speaking this should be IPPROTO_IPV6 to return IPv4 addresses
+	   that are suitable for IPv6 in IPv4 tunnelling. This however fails on my
+	   android 4.2.2 device and returns an empty list. Because we only care about
+	   the IPv4 address, do our tunnel magic later, we might as well fail later
+	   and request an IPv4 address for UDP, which should work on all systems. */
+	hints.ai_protocol=IPPROTO_UDP;
 	err = getaddrinfo(host, NULL, &hints, &addr_info);
 
 	if (err) {
