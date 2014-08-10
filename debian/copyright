@@ -1,22 +1,30 @@
-This package was debianized by Bernhard Schmidt <berni+deb@birkenwald.de> on
-Fri, 29 May 2009 19:24:43 +0200.
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: isatapd
+Source: http://saschahlusiak.de/linux/isatap.htm
 
-It was downloaded from <http://saschahlusiak.de/linux/isatap.htm>
+Files: *
+Copyright: Copyright (c) 2009 Sascha Hlusiak <mail@saschahlusiak.de>
+License: GPL-2
 
-Upstream Author:
+Files: debian/*
+Copyright: Copyright (c) 2009 Bernhard Schmidt <berni+deb@birkenwald.de>
+License: GPL-2
 
-    Sascha Hlusiak <mail@saschahlusiak.de>
+License: GPL-2
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; version 2 of the License.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+ .
+ On Debian and systems the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2`
 
-Copyright:
-
-    Copyright (C) 2009 Sascha Hlusiak
-
-License:
-
-    isatapd is licensed under the GNU GPL version 2.
-
-    On Debian systems, the complete text of the GNU General Public License
-    can be found in /usr/share/common-licenses/GPL-2 .
-
-The Debian packaging is copyright 2009, Bernhard Schmidt <berni+deb@birkenwald.de> and
-is licensed under the GPLv2, see `/usr/share/common-licenses/GPL-2'.
