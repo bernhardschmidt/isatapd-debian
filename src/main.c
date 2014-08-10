@@ -169,12 +169,12 @@ static void parse_options(int argc, char** argv)
 
 		switch (c) {
 		  /* --name */
-		case 'n': if (optarg)
+		case 'n': if (optarg && strcmp("auto", optarg))
 				tunnel_name = strdup(optarg);
 			break;
 			
 		  /* --link */
-		case 'l': if (optarg)
+		case 'l': if (optarg && strcmp("auto", optarg))
 				interface_name = strdup(optarg);
 			break;
 			
@@ -184,7 +184,7 @@ static void parse_options(int argc, char** argv)
 			break;
 			
 		  /* --interval */
-		case 'i': if (optarg) {
+		case 'i': if (optarg && strcmp("auto", optarg)) {
 				if ((sscanf(optarg, "%d", &rs_interval) < 1) || (rs_interval < 0)) {
 					syslog(LOG_ERR, "invalid cardinal -- %s\n", optarg);
 					show_help();
@@ -211,10 +211,14 @@ static void parse_options(int argc, char** argv)
 			break;
 			
 		  /* --mtu */
-		case 'm': mtu = atoi(optarg);
-			if (mtu <= 0) {
-				syslog(LOG_ERR, "invalid mtu -- %s\n", optarg);
-				show_help();
+		case 'm': if ((strcmp(optarg, "auto") == 0) || (strcmp(optarg, "0") == 0))
+				mtu = 0;
+			else {
+				mtu = atoi(optarg);
+				if (mtu <= 0) {
+					syslog(LOG_ERR, "invalid mtu -- %s\n", optarg);
+					show_help();
+				}
 			}
 			break;
 		  /* --ttl */
@@ -475,17 +479,11 @@ static void write_pid_file()
 	char s[32];
 	int pf;
 
-	pf = open(pid_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	pf = open(pid_file, O_WRONLY | O_CREAT, 0644);
 	if (pf < 0) {
 		syslog(LOG_ERR, "Cannot create pid file, terminating: %s\n", strerror(errno));
 		exit(1);
 	}
-	
-	snprintf(s, sizeof(s), "%d\n", (int)getpid());
-	if (write(pf, s, strlen(s)) < strlen(s))
-		syslog(LOG_ERR, "write: %s\n", strerror(errno));
-	if (fsync(pf) < 0)
-		syslog(LOG_ERR, "fsync: %s\n", strerror(errno));
 
 	fl.l_type = F_WRLCK;
 	fl.l_whence = SEEK_SET;
@@ -496,6 +494,17 @@ static void write_pid_file()
 		syslog(LOG_ERR, "Cannot lock pid file, terminating: %s\n", strerror(errno));
 		exit(1);
 	}
+
+	if (ftruncate(pf, 0) < 0) {
+		syslog(LOG_ERR, "Cannot truncate pid file, terminating: %s\n", strerror(errno));
+		exit(1);
+	}
+
+	snprintf(s, sizeof(s), "%d\n", (int)getpid());
+	if (write(pf, s, strlen(s)) < strlen(s))
+		syslog(LOG_ERR, "write: %s\n", strerror(errno));
+	if (fsync(pf) < 0)
+		syslog(LOG_ERR, "fsync: %s\n", strerror(errno));
 }
 
 
