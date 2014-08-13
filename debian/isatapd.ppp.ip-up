@@ -5,7 +5,7 @@ if [ -f /etc/default/isatapd ]; then
 fi
 
 if [ "$RELOAD_ON_IFUPDOWN" = "yes" ]; then
-	if invoke-rc.d isatapd status > /dev/null; then
+	if invoke-rc.d --quiet isatapd status > /dev/null; then
 		if [ "$RELOAD_ON_IFUPDOWN_DELAY" ]; then
 			sleep $RELOAD_ON_IFUPDOWN_DELAY
 		fi
