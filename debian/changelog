@@ -1,3 +1,17 @@
+isatapd (0.9.7-1) unstable; urgency=medium
+
+  * Imported Upstream version 0.9.7
+  * set architecture to linux-any to avoid building on kfreebsd and hurd
+  * bump debhelper dependency to >= 9~, drop lintian override
+  * bump Standards-Version to 3.9.5, no changes necessary
+  * make debian/copyright DEP5 compatible
+  * Convert RUN= to properly enabled/disabled services on upgrade
+  * Install systemd unit file
+  * Use --quiet flag of invoke-rc.d when querying for status (Closes: #709141)
+  * Use source format 3.0 (quilt)
+
+ -- Bernhard Schmidt <berni+deb@birkenwald.de>  Mon, 18 Aug 2014 16:54:15 +0200
+
 isatapd (0.9.6-2) unstable; urgency=low
 
   * switch from cdbs to debhelper9 for hardening
